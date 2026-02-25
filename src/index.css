@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Quicksand:wght@300..700&display=swap');
+@import "tailwindcss";
+
+@layer base {
+  *, ::before, ::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    line-height: 1.6;
+  }
+
+  h1, h2, h3, h4 {
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+@theme {
+  --font-display: "Fredoka", sans-serif;
+  --font-sans: "Quicksand", sans-serif;
+  
+  --color-bubblegum: #FF85B3;
+  --color-bubblegum-light: #FFB3D1;
+  --color-baby-blue: #A5DEFB;
+  --color-egg-yolk: #FFD700;
+  --color-cartoon-black: #2D2D2D;
+  --color-brand-green: #31bd66;
+  --color-brand-green-dark: #28a156;
+}
+
+@layer utilities {
+  .cartoon-border {
+    border: 3px solid var(--color-cartoon-black);
+  }
+  
+  .glossy-button {
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%);
+    box-shadow: 0 4px 0 0 rgba(0,0,0,0.2), inset 0 2px 0 0 rgba(255,255,255,0.5);
+  }
+  
+  .glossy-button:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 0 rgba(0,0,0,0.2), inset 0 2px 0 0 rgba(255,255,255,0.5);
+  }
+
+  .speech-bubble {
+    position: relative;
+    background: var(--color-egg-yolk);
+    border: 3px solid var(--color-cartoon-black);
+  }
+
+  .speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    left: 20px;
+    border-width: 15px 15px 0;
+    border-style: solid;
+    border-color: var(--color-cartoon-black) transparent;
+    display: block;
+    width: 0;
+  }
+
+  .speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 22px;
+    border-width: 12px 12px 0;
+    border-style: solid;
+    border-color: var(--color-egg-yolk) transparent;
+    display: block;
+    width: 0;
+    z-index: 1;
+  }
+}
