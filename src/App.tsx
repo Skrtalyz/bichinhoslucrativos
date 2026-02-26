@@ -18,37 +18,31 @@ import {
 } from "lucide-react";
 
 const Button = ({ children, className = "", onClick, href }: { children: ReactNode; className?: string; onClick?: () => void; href?: string }) => {
-  const content = (
-    <div
-      className={`w-full py-4 px-8 rounded-2xl font-display font-bold text-lg md:text-xl transition-all duration-200 uppercase tracking-wide cartoon-border glossy-button flex items-center justify-center gap-2 ${className}`}
-    >
-      {children}
-    </div>
-  );
-
-  if (href) {
-    return (
-      <motion.a
-        href={href}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full block no-underline"
-      >
-        {content}
-      </motion.a>
-    );
-  }
+  const handleClick = (e: React.MouseEvent) => {
+    // Evita que o evento borbulhe para scripts que podem tentar serializar o elemento
+    e.stopPropagation();
+    
+    if (href) {
+      window.location.href = href;
+    } else if (onClick) {
+      onClick();
+    }
+  };
 
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className="w-full cursor-pointer"
-      onClick={onClick}
+      onClick={handleClick}
       role="button"
       tabIndex={0}
     >
-      {content}
+      <div
+        className={`w-full py-4 px-8 rounded-2xl font-display font-bold text-lg md:text-xl transition-all duration-200 uppercase tracking-wide cartoon-border glossy-button flex items-center justify-center gap-2 ${className}`}
+      >
+        {children}
+      </div>
     </motion.div>
   );
 };
@@ -107,8 +101,10 @@ export default function App() {
     // Captura os parâmetros da URL atual e anexa ao link de checkout
     const params = window.location.search;
     if (params) {
-      // Se o CHECKOUT_URL já tivesse um '?', usaríamos '&', mas como não tem, o '?' do search resolve
-      setCheckoutUrlWithParams(`${CHECKOUT_URL}${params}`);
+      const separator = CHECKOUT_URL.includes('?') ? '&' : '?';
+      // Remove o leading '?' se existir para evitar duplicação
+      const cleanParams = params.startsWith('?') ? params.substring(1) : params;
+      setCheckoutUrlWithParams(`${CHECKOUT_URL}${separator}${cleanParams}`);
     }
   }, []);
 
