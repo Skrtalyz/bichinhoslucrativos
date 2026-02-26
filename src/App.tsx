@@ -18,32 +18,41 @@ import {
 } from "lucide-react";
 
 const Button = ({ children, className = "", onClick, href }: { children: ReactNode; className?: string; onClick?: () => void; href?: string }) => {
-  const handleClick = (e: React.MouseEvent) => {
-    // Evita que o evento borbulhe para scripts que podem tentar serializar o elemento
-    e.stopPropagation();
-    
-    if (href) {
-      window.location.href = href;
-    } else if (onClick) {
-      onClick();
-    }
-  };
+  const content = (
+    <div
+      className={`w-full py-4 px-8 rounded-2xl font-display font-bold text-lg md:text-xl transition-all duration-200 uppercase tracking-wide cartoon-border glossy-button flex items-center justify-center gap-2 ${className}`}
+    >
+      {children}
+    </div>
+  );
+
+  if (href) {
+    return (
+      <a 
+        href={href} 
+        className="w-full block no-underline"
+        data-utmify-checkout="true"
+      >
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {content}
+        </motion.div>
+      </a>
+    );
+  }
 
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       className="w-full cursor-pointer"
-      onClick={handleClick}
+      onClick={onClick}
       role="button"
       tabIndex={0}
-      data-utmify-checkout="true"
     >
-      <div
-        className={`w-full py-4 px-8 rounded-2xl font-display font-bold text-lg md:text-xl transition-all duration-200 uppercase tracking-wide cartoon-border glossy-button flex items-center justify-center gap-2 ${className}`}
-      >
-        {children}
-      </div>
+      {content}
     </motion.div>
   );
 };
@@ -108,31 +117,6 @@ export default function App() {
       setCheckoutUrlWithParams(`${CHECKOUT_URL}${separator}${cleanParams}`);
     }
   }, []);
-
-  const handleCheckout = () => {
-    // Tenta disparar o evento de InitiateCheckout manualmente para o UTMify e outros pixels
-    try {
-      // UTMify padrão
-      if (typeof (window as any).utmify === 'function') {
-        (window as any).utmify('track', 'InitiateCheckout');
-      }
-      // Alternativa UTMify
-      if ((window as any).pixel && typeof (window as any).pixel.track === 'function') {
-        (window as any).pixel.track('InitiateCheckout');
-      }
-      // Facebook Pixel
-      if ((window as any).fbq) {
-        (window as any).fbq('track', 'InitiateCheckout');
-      }
-    } catch (e) {
-      console.error("Erro ao rastrear InitiateCheckout:", e);
-    }
-
-    // Pequeno delay para garantir que o pixel tenha tempo de processar antes do redirecionamento
-    setTimeout(() => {
-      window.location.href = checkoutUrlWithParams;
-    }, 200);
-  };
 
   const scrollToPricing = () => {
     const element = document.getElementById("pricing");
@@ -364,7 +348,7 @@ export default function App() {
             </div>
 
             <Button 
-              onClick={handleCheckout}
+              href={checkoutUrlWithParams}
               className="bg-brand-green hover:bg-brand-green-dark text-white text-2xl md:text-3xl py-6 md:py-8 shadow-[0_10px_20px_rgba(49,189,102,0.3)]"
             >
               QUERO MINHA VAGA! 🐾
