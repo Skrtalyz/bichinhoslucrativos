@@ -14,7 +14,11 @@ import {
   Cloud,
   Cat,
   Dog,
-  Heart
+  Heart,
+  Play,
+  Pause,
+  RotateCcw,
+  VolumeX
 } from "lucide-react";
 
 const Button = ({ children, className = "", onClick, href }: { children: ReactNode; className?: string; onClick?: () => void; href?: string }) => {
@@ -102,6 +106,117 @@ const BonusCard = ({ title, description, oldPrice, index, icon, imageUrl }: { ti
     <Sparkles className="absolute bottom-4 right-4 text-egg-yolk w-6 h-6 opacity-30" />
   </motion.div>
 );
+
+const CustomVideoPlayer = ({ src, poster }: { src: string; poster?: string }) => {
+  const videoRef = React.useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [isEnded, setIsEnded] = React.useState(false);
+  const [isMuted, setIsMuted] = React.useState(true);
+
+  const handleInteraction = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (videoRef.current) {
+      if (isMuted) {
+        // Primeira interação: tira o mute e volta pro começo
+        videoRef.current.muted = false;
+        videoRef.current.currentTime = 0;
+        videoRef.current.play();
+        setIsMuted(false);
+        setIsPlaying(true);
+        setIsEnded(false);
+      } else {
+        // Interações seguintes: toggle play/pause
+        if (videoRef.current.paused) {
+          videoRef.current.play();
+          setIsPlaying(true);
+          setIsEnded(false);
+        } else {
+          videoRef.current.pause();
+          setIsPlaying(false);
+        }
+      }
+    }
+  };
+
+  const handleReplay = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play();
+      setIsPlaying(true);
+      setIsEnded(false);
+    }
+  };
+
+  return (
+    <div className="flex justify-center">
+      <div className="relative group rounded-[2rem] overflow-hidden cartoon-border shadow-[8px_8px_0_0_rgba(45,45,45,1)] bg-black inline-block">
+        <video
+          ref={videoRef}
+          className="max-w-full h-auto max-h-[85vh] block cursor-pointer mx-auto"
+          poster={poster}
+          onClick={handleInteraction}
+          onEnded={() => {
+            setIsPlaying(false);
+            setIsEnded(true);
+          }}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          autoPlay
+          muted
+          playsInline
+        >
+          <source src={src} type="video/mp4" />
+          Seu navegador não suporta vídeos.
+        </video>
+
+        {/* Indicador de Mudo */}
+        {isMuted && !isEnded && (
+          <div className="absolute top-4 right-4 z-20 animate-bounce">
+            <div className="bg-bubblegum text-white p-3 rounded-xl cartoon-border shadow-md flex items-center gap-2 font-display font-black text-xs uppercase tracking-wider">
+              <VolumeX size={18} />
+              Clique para ouvir
+            </div>
+          </div>
+        )}
+
+        {/* Overlay Controls */}
+        <div 
+          className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${
+            isPlaying && !isMuted ? "opacity-0 group-hover:opacity-100" : "opacity-100"
+          } bg-black/20 pointer-events-none`}
+        >
+        {!isEnded ? (
+          <div
+            onClick={handleInteraction}
+            role="button"
+            tabIndex={0}
+            className="w-20 h-20 bg-white rounded-full cartoon-border shadow-lg flex items-center justify-center text-cartoon-black hover:scale-110 transition-transform pointer-events-auto cursor-pointer"
+          >
+            {isMuted ? (
+              <Play size={40} fill="currentColor" className="ml-2" />
+            ) : isPlaying ? (
+              <Pause size={40} fill="currentColor" />
+            ) : (
+              <Play size={40} fill="currentColor" className="ml-2" />
+            )}
+          </div>
+        ) : (
+          <div
+            onClick={handleReplay}
+            role="button"
+            tabIndex={0}
+            className="bg-white px-8 py-4 rounded-2xl cartoon-border shadow-lg flex items-center gap-3 text-cartoon-black font-display font-black uppercase hover:scale-105 transition-transform pointer-events-auto cursor-pointer"
+          >
+            <RotateCcw size={24} />
+            Ver novamente
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+  );
+};
 
 export default function App() {
   const CHECKOUT_URL = "https://www.ggcheckout.com/checkout/v5/s2nT2NQ3GnVYMQU1IW97";
@@ -306,6 +421,29 @@ export default function App() {
             className="bg-brand-green hover:bg-brand-green-dark text-white max-w-md mx-auto"
           >
             Quero aprender tudo! 🚀
+          </Button>
+        </div>
+      </Section>
+
+      {/* Testimonials Section */}
+      <Section className="bg-baby-blue/5">
+        <h2 className="text-3xl md:text-5xl font-display font-black text-center mb-12 leading-tight">
+          Veja o que nossas últimas alunas disseram do <span className="text-bubblegum">CURSO BICHINHOS LUCRATIVOS AI</span>:
+        </h2>
+        
+        <div className="max-w-4xl mx-auto">
+          <CustomVideoPlayer 
+            src="https://www.dropbox.com/scl/fi/t84tdvsbne731hbpfdf5p/0226-1.mp4?rlkey=2ymn66d80adespyw64d8fch9k&st=u752igg7&raw=1"
+            poster="https://i.postimg.cc/jd3GxQ7F/image.png"
+          />
+        </div>
+
+        <div className="mt-16 text-center">
+          <Button 
+            onClick={scrollToPricing}
+            className="bg-brand-green hover:bg-brand-green-dark text-white max-w-md mx-auto"
+          >
+            Quero ter esses resultados! 🚀
           </Button>
         </div>
       </Section>
