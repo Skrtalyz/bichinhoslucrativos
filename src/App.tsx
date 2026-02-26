@@ -37,6 +37,7 @@ const Button = ({ children, className = "", onClick, href }: { children: ReactNo
       onClick={handleClick}
       role="button"
       tabIndex={0}
+      data-utmify-checkout="true"
     >
       <div
         className={`w-full py-4 px-8 rounded-2xl font-display font-bold text-lg md:text-xl transition-all duration-200 uppercase tracking-wide cartoon-border glossy-button flex items-center justify-center gap-2 ${className}`}
@@ -107,6 +108,31 @@ export default function App() {
       setCheckoutUrlWithParams(`${CHECKOUT_URL}${separator}${cleanParams}`);
     }
   }, []);
+
+  const handleCheckout = () => {
+    // Tenta disparar o evento de InitiateCheckout manualmente para o UTMify e outros pixels
+    try {
+      // UTMify padrão
+      if (typeof (window as any).utmify === 'function') {
+        (window as any).utmify('track', 'InitiateCheckout');
+      }
+      // Alternativa UTMify
+      if ((window as any).pixel && typeof (window as any).pixel.track === 'function') {
+        (window as any).pixel.track('InitiateCheckout');
+      }
+      // Facebook Pixel
+      if ((window as any).fbq) {
+        (window as any).fbq('track', 'InitiateCheckout');
+      }
+    } catch (e) {
+      console.error("Erro ao rastrear InitiateCheckout:", e);
+    }
+
+    // Pequeno delay para garantir que o pixel tenha tempo de processar antes do redirecionamento
+    setTimeout(() => {
+      window.location.href = checkoutUrlWithParams;
+    }, 200);
+  };
 
   const scrollToPricing = () => {
     const element = document.getElementById("pricing");
@@ -338,7 +364,7 @@ export default function App() {
             </div>
 
             <Button 
-              href={checkoutUrlWithParams}
+              onClick={handleCheckout}
               className="bg-brand-green hover:bg-brand-green-dark text-white text-2xl md:text-3xl py-6 md:py-8 shadow-[0_10px_20px_rgba(49,189,102,0.3)]"
             >
               QUERO MINHA VAGA! 🐾
