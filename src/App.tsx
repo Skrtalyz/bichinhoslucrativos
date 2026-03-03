@@ -479,7 +479,7 @@ export default function App() {
               <div className="speech-bubble inline-block p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] transform hover:scale-105 transition-transform">
                 <div className="flex items-center justify-center gap-1 md:gap-2">
                   <span className="text-2xl md:text-4xl font-display font-black text-cartoon-black/40">R$</span>
-                  <span className="text-6xl md:text-9xl font-display font-black text-red-600 [text-shadow:_3px_3px_0_#FFF]">23,40</span>
+                  <span className="text-6xl md:text-9xl font-display font-black text-red-600 [text-shadow:_3px_3px_0_#FFF]">17,20</span>
                 </div>
                 <p className="text-cartoon-black font-black mt-4 text-base md:text-lg line-through opacity-60">DE R$ 458,00</p>
               </div>
